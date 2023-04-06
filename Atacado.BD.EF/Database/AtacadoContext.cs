@@ -16,9 +16,10 @@ namespace Atacado.BD.EF.Database;
         {
         }
 
-        public virtual DbSet<Categorium> Categoria { get; set; } = null!;
+        public virtual DbSet<AreaConhecimento> AreaConhecimentos { get; set; } = null!;
+        public virtual DbSet<Categoria> Categorias { get; set; } = null!;
         public virtual DbSet<Produto> Produtos { get; set; } = null!;
-        public virtual DbSet<Subcategorium> Subcategoria { get; set; } = null!;
+        public virtual DbSet<Subcategoria> Subcategorias { get; set; } = null!;
         public virtual DbSet<Regiao> Regioes {get; set;} =null!;
         public virtual DbSet<Estado> Estados {get; set;} =null!;
         public virtual DbSet<Cidade> Cidades {get; set;} =null!;
@@ -27,13 +28,19 @@ namespace Atacado.BD.EF.Database;
         {
             if (!optionsBuilder.IsConfigured)
             {
-                optionsBuilder.UseSqlServer("Data Source= DESKTOP-QQJDB2N;Initial Catalog=bdAtacado;User=usrAtacado;Password=senha123;TrustServerCertificate=True;");
+#warning To protect potentially sensitive information in your connection string, you should move it out of source code. You can avoid scaffolding the connection string by using the Name= syntax to read it from configuration - see https://go.microsoft.com/fwlink/?linkid=2131148. For more guidance on storing connection strings, see http://go.microsoft.com/fwlink/?LinkId=723263.
+                optionsBuilder.UseSqlServer("Data Source=(local);Initial Catalog=bdAtacado;User=usrAtacado;Password=senha123;TrustServerCertificate=True;");
             }
         }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            modelBuilder.Entity<Categorium>(entity =>
+            modelBuilder.Entity<AreaConhecimento>(entity =>
+            {
+                entity.Property(e => e.DataInclusao).HasDefaultValueSql("(getdate())");
+            });
+
+            modelBuilder.Entity<Categoria>(entity =>
             {
                 entity.Property(e => e.DataInclusao).HasDefaultValueSql("(getdate())");
             });
@@ -41,23 +48,11 @@ namespace Atacado.BD.EF.Database;
             modelBuilder.Entity<Produto>(entity =>
             {
                 entity.Property(e => e.DataInclusao).HasDefaultValueSql("(getdate())");
-
-                entity.HasOne(d => d.CodigoSubcategoriaNavigation)
-                    .WithMany(p => p.Produtos)
-                    .HasForeignKey(d => d.CodigoSubcategoria)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK_Produto_Subcategoria");
             });
 
-            modelBuilder.Entity<Subcategorium>(entity =>
+            modelBuilder.Entity<Subcategoria>(entity =>
             {
                 entity.Property(e => e.DataInclusao).HasDefaultValueSql("(getdate())");
-
-                entity.HasOne(d => d.CodigoCategoriaNavigation)
-                    .WithMany(p => p.Subcategoria)
-                    .HasForeignKey(d => d.CodigoCategoria)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK_Subcategoria_Categoria");
             });
 
             modelBuilder.Entity<Regiao>();
